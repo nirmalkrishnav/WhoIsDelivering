@@ -3,13 +3,19 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 from keyboard import press
 from datetime import datetime
-import csv   
+import csv
+import json 
+
 
 class WhoIsDelivering():
     def __init__(self):
         op = Options()
         op.headless = True
         self.driver = webdriver.Chrome(options=op)
+
+    def loadParam(self):
+        f = open('param.json',) 
+        self.param = json.load(f)
 
     def logMessage(self, message):
         print(message +'    '+  datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
@@ -24,14 +30,14 @@ class WhoIsDelivering():
         self.logMessage('[bot]    opened Amazon.in')
 
         zip_textbox = self.driver.find_element_by_id('GLUXZipUpdateInput')
-        zip_textbox.send_keys('600042')
+        zip_textbox.send_keys(self.param['zip'])
 
         submit = self.driver.find_element_by_id('GLUXZipUpdate')
         submit.click()
 
         # need try catch here
         sleep(10)
-        self.logMessage('[bot]    searching for availability at 600042')
+        self.logMessage('[bot]    searching for availability at'+self.param['zip'])
 
         availability = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[4]/div[20]/div[1]').text
         delivery_status = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[4]/div[25]').text
@@ -48,5 +54,5 @@ class WhoIsDelivering():
 
 
 bot = WhoIsDelivering()
-bot.checkAmazon()
-# bot.autoLike()
+bot.loadParam()
+# bot.checkAmazon()
