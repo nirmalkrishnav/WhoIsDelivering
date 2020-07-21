@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.options import Options
 from time import sleep
 from keyboard import press
 from datetime import datetime
+import csv   
 
 class WhoIsDelivering():
     def __init__(self):
@@ -28,20 +29,22 @@ class WhoIsDelivering():
         submit = self.driver.find_element_by_id('GLUXZipUpdate')
         submit.click()
 
-        sleep(5)
+        # need try catch here
+        sleep(10)
         self.logMessage('[bot]    searching for availability at 600042')
 
         availability = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[4]/div[20]/div[1]').text
         delivery_status = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[4]/div[25]').text
-        
-        output_file = open("output.csv","a")
-
         now = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-        output_file.write(now +','+ delivery_status+','+ availability)
-        print('[bot]    output recorded')
+        
+        with open(r'output.csv', 'a') as f:
+            writer = csv.writer(f)
+            writer.writerow([now, availability, delivery_status])
+
+        self.logMessage('[bot]    output recorded')
         
         self.driver.quit()
-        print('[bot]    gg')
+        self.logMessage('[bot]    gg')
 
 
 bot = WhoIsDelivering()
