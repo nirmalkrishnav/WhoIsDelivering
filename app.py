@@ -11,7 +11,7 @@ class WhoIsDelivering():
     def __init__(self):
         op = Options()
         op.headless = True
-        self.driver = webdriver.Chrome(options=op)
+        self.driver = webdriver.Chrome()
 
     def loadParam(self):
         f = open('param.json',) 
@@ -21,7 +21,7 @@ class WhoIsDelivering():
         print(message +'    '+  datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
 
     def checkAmazon(self):
-        self.driver.get('https://www.amazon.in/dp/B0859LMY97/ref=cm_sw_r_tw_dp_x_HyYfFbYZFP80C')
+        self.driver.get(self.param['amazon_item'])
         sleep(3)
         open_zip_popup = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[1]/div[3]/div/div/div/form/div/div/div/div/div[2]/div/div[40]/span/a/div/div/div/span/div')
         open_zip_popup.click()
@@ -36,7 +36,7 @@ class WhoIsDelivering():
         submit.click()
 
         # need try catch here
-        sleep(10)
+        sleep(20)
         self.logMessage('[bot]    searching for availability at'+self.param['zip'])
 
         availability = self.driver.find_element_by_xpath('/html/body/div[2]/div[2]/div[4]/div[5]/div[4]/div[20]/div[1]').text
@@ -45,7 +45,7 @@ class WhoIsDelivering():
         
         with open(r'output.csv', 'a') as f:
             writer = csv.writer(f)
-            writer.writerow([now, availability, delivery_status])
+            writer.writerow([now, self.param['zip'], availability, delivery_status])
 
         self.logMessage('[bot]    output recorded')
         
@@ -55,4 +55,4 @@ class WhoIsDelivering():
 
 bot = WhoIsDelivering()
 bot.loadParam()
-# bot.checkAmazon()
+bot.checkAmazon()
